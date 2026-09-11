@@ -953,7 +953,6 @@
       <input type="hidden" name="_subject" value="Novo contato pelo site — Nexo Tech">
       <input type="hidden" name="_template" value="table">
       <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_next" id="form-next" value="">
       <div>
         <label for="nome">Nome</label>
         <input id="nome" name="nome" type="text" required>
@@ -1013,7 +1012,6 @@
   // Envio do formulário (via FormSubmit — envia de verdade para o e-mail configurado)
   const form = document.getElementById('contact-form');
   const msg = document.getElementById('form-msg');
-  const nextField = document.getElementById('form-next');
   const sentStatus = new URLSearchParams(window.location.search).get('enviado');
 
   if (sentStatus === 'sucesso') {
@@ -1022,9 +1020,27 @@
     window.history.replaceState({}, document.title, window.location.pathname + '#contato');
   }
 
-  form.addEventListener('submit', function(){
-    nextField.value = window.location.origin + window.location.pathname + '?enviado=sucesso#contato';
+  form.addEventListener('submit', async function(event){
+    event.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    msg.textContent = 'Enviando sua mensagem...';
     msg.classList.add('visible');
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+
+      if (!response.ok) throw new Error('Falha no envio');
+      form.reset();
+      msg.textContent = 'Mensagem enviada com sucesso! Em breve entraremos em contato.';
+    } catch (error) {
+      msg.textContent = 'Não foi possível enviar agora. Tente novamente em instantes.';
+      submitButton.disabled = false;
+    }
   });
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
