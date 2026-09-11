@@ -1026,6 +1026,7 @@
     submitButton.disabled = true;
     msg.textContent = 'Enviando sua mensagem...';
     msg.classList.add('visible');
+    form.reset();
 
     try {
       const response = await fetch(form.action, {
@@ -1035,7 +1036,6 @@
       });
 
       if (!response.ok) throw new Error('Falha no envio');
-      form.reset();
       msg.textContent = 'Mensagem enviada com sucesso! Em breve entraremos em contato.';
     } catch (error) {
       msg.textContent = 'Não foi possível enviar agora. Tente novamente em instantes.';
