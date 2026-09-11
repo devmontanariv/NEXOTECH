@@ -1034,10 +1034,7 @@
         headers: { Accept: 'application/json' }
       });
 
-      const contentType = response.headers.get('content-type') || '';
-      if (!response.ok || !contentType.includes('application/json')) {
-        throw new Error('Formulário ainda não ativado');
-      }
+      if (!response.ok) throw new Error('Falha no envio');
       form.reset();
       msg.textContent = 'Mensagem enviada com sucesso! Em breve entraremos em contato.';
     } catch (error) {
